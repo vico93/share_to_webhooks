@@ -20,7 +20,7 @@ function downloadInstagramMedia(url, tempDir, maxSize) {
     const args = [
       '-o', filePath,
       '--no-playlist',
-      '--max-filesize', `${maxSize}b`,
+      '--max-filesize', `${maxSize}`,
       '--quiet',
       '--no-warnings',
       url
