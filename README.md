@@ -82,6 +82,95 @@ Por padrão, o servidor será executado no host e porta definidos no arquivo `co
 - **`npm run dev`**: Inicia o servidor em modo de desenvolvimento, com recarregamento automático.
 - **`npm test`**: Executa os testes automatizados.
 
+## Configuração do Serviço Systemd (Raspberry Pi 3B+)
+
+### Visão Geral do Serviço Systemd
+
+O serviço systemd permite que o share_to_webhooks seja executado automaticamente como um serviço em background no Raspberry Pi 3B+. O arquivo de serviço `shtwb.example.service` está configurado com as melhores práticas de segurança e recursos otimizados para o hardware do Raspberry Pi 3B+.
+
+### Funcionalidades do Serviço
+
+- **Execução automática**: Inicia automaticamente com o sistema operacional
+- **Reinicialização automática**: Reinicia automaticamente em caso de falhas
+- **Logs centralizados**: Integração com o journal do systemd para logs estruturados
+- **Configurações de segurança**: Executa com privilégios limitados e recursos controlados
+- **Otimização para Raspberry Pi 3B+**: Limites de memória e arquivos ajustados para o hardware
+
+### Instalação e Configuração do Serviço
+
+1. **Copie o arquivo de serviço**:
+   ```bash
+   sudo cp shtwb.example.service /etc/systemd/system/shtwb.service
+   ```
+
+2. **Ajuste as configurações do serviço** (se necessário):
+   ```bash
+   sudo nano /etc/systemd/system/shtwb.service
+   ```
+
+   > **Importante**: Certifique-se de que o caminho `WorkingDirectory` aponta para o diretório correto onde o projeto está instalado.
+
+3. **Configure o arquivo de configuração**:
+   - Certifique-se de que o arquivo `config.json` está presente e configurado no diretório do projeto
+   - O serviço não iniciará sem o arquivo `config.json` válido
+
+### Gerenciamento do Serviço
+
+1. **Recarregue a configuração do systemd**:
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+2. **Habilite o serviço para iniciar automaticamente**:
+   ```bash
+   sudo systemctl enable shtwb
+   ```
+
+3. **Inicie o serviço**:
+   ```bash
+   sudo systemctl start shtwb
+   ```
+
+4. **Verifique o status do serviço**:
+   ```bash
+   sudo systemctl status shtwb
+   ```
+
+5. **Visualize os logs do serviço**:
+   ```bash
+   sudo journalctl -u shtwb -f
+   ```
+
+### Comandos Úteis para Gerenciamento
+
+- **`sudo systemctl start shtwb`**: Inicia o serviço
+- **`sudo systemctl stop shtwb`**: Para o serviço
+- **`sudo systemctl restart shtwb`**: Reinicia o serviço
+- **`sudo systemctl reload shtwb`**: Recarrega a configuração sem parar o serviço
+- **`sudo systemctl disable shtwb`**: Desabilita o início automático
+- **`sudo journalctl -u shtwb --since today`**: Mostra os logs de hoje
+
+### Considerações de Segurança
+
+- **Usuário não privilegiado**: O serviço executa como usuário `pi` (não root) por segurança
+- **Permissões restritas**: Configurações de segurança impedem acesso a recursos desnecessários
+- **Limites de recursos**: Memória limitada a 256MB para evitar sobrecarga no Raspberry Pi 3B+
+- **Logs protegidos**: Saída padrão e erro são direcionados para o journal do systemd
+
+### Requisitos para Funcionamento
+
+- **Arquivo `config.json`**: Deve estar presente e válido no diretório do projeto
+- **Dependências instaladas**: Node.js e `yt-dlp` devem estar disponíveis
+- **Rede configurada**: O serviço requer `network-online.target` para iniciar
+- **Permissões de arquivo**: O usuário `pi` deve ter acesso de leitura/escrita no diretório do projeto
+
+### Solução de Problemas
+
+- **Serviço não inicia**: Verifique se o arquivo `config.json` existe e está válido
+- **Erros de permissão**: Certifique-se de que o usuário `pi` tem acesso ao diretório
+- **Problemas de rede**: O serviço aguarda a rede estar disponível antes de iniciar
+- **Logs detalhados**: Use `journalctl -u shtwb` para diagnosticar problemas
+
 ## Instruções de Uso com HTTP Shortcuts
 
 ### Exemplo de Payload POST

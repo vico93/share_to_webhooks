@@ -1,0 +1,37 @@
+[Unit]
+Description=Share to Webhooks - Discord Webhook Media Sharing Service
+After=network.target network-online.target
+Wants=network-online.target
+Documentation=https://github.com/your-repo/share_to_webhooks
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/share_to_webhooks
+ExecStart=/usr/bin/npm start
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shtwb
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/pi/share_to_webhooks
+PrivateDevices=true
+
+# Environment
+Environment=NODE_ENV=production
+EnvironmentFile=-/home/pi/.config/shtwb/env
+
+# Resource limits for Raspberry Pi 3B+
+LimitNOFILE=65536
+MemoryLimit=256M
+
+[Install]
+WantedBy=multi-user.target
